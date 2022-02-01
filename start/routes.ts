@@ -21,5 +21,8 @@
 import Route from '@ioc:Adonis/Core/Route'
 
 Route.get('/', async () => {
-  return { hello: 'world' }
+  return { status: '200', messages: 'API Run Successfully' }
 })
+
+Route.post('/upload-file', 'FileHandlersController.upload')
+Route.get('/show-file/:filename', 'FileHandlersController.show')
