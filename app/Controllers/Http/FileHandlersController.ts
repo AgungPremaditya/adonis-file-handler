@@ -1,7 +1,7 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { string } from '@ioc:Adonis/Core/Helpers'
 
 import Drive from '@ioc:Adonis/Core/Drive'
-import { DateTime } from 'luxon'
 
 export default class FileHandlersController {
   public async upload({ request, response }: HttpContextContract) {
@@ -11,17 +11,17 @@ export default class FileHandlersController {
       return response.notFound()
     }
 
-    const time = DateTime.now().toFormat("HH'H'mm'M'")
+    const randString = string.generateRandom(5)
 
     await file.moveToDisk('images', {
-      name: `File_${time}.${file.extname}`,
+      name: `File_${randString}.${file.extname}`,
     })
 
     Drive.use('local')
 
     const url = await Drive.getUrl('images/')
 
-    return `${url}File_${time}.${file.extname}`
+    return `${url}File_${randString}.${file.extname}`
   }
 
   public async show({ response, params }: HttpContextContract) {
@@ -32,5 +32,28 @@ export default class FileHandlersController {
     const url = await Drive.getStream(`images/${filename}`)
 
     response.stream(url)
+  }
+
+  public async update({ params, request, response }: HttpContextContract) {
+    const filename = params.filename
+    const file = request.file('file')
+
+    if (!file) {
+      return response.notFound()
+    }
+
+    Drive.use('local')
+
+    await Drive.delete(`images/${filename}`)
+
+    const randString = string.generateRandom(5)
+
+    await file.moveToDisk('images', {
+      name: `File_${randString}.${file.extname}`,
+    })
+
+    const url = await Drive.getUrl('images/')
+
+    return `${url}File_${randString}.${file.extname}`
   }
 }

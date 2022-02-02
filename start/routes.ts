@@ -26,3 +26,4 @@ Route.get('/', async () => {
 
 Route.post('/upload-file', 'FileHandlersController.upload')
 Route.get('/show-file/:filename', 'FileHandlersController.show')
+Route.put('/update-file/:filename', 'FileHandlersController.update')
